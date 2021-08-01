@@ -40,7 +40,6 @@ def auth(func):
                 return await func(message)
         return await message.answer('Вы не авторизованы.\nВведите /start для авторизации.')\
             and logging.info('Not auth ' + str(message.from_user))
-
     return wrapper
 
 
@@ -181,8 +180,9 @@ async def replay_unload(message: types.Message, state: FSMContext):
     markup_reply = types.ReplyKeyboardMarkup(resize_keyboard=True)
     item_watch = types.KeyboardButton(text='Смотреть')
     markup_reply.add(item_watch)
-    await message.answer('Загружаю запись...', reply_markup=markup_reply)
-    screenshoting(3)
+    screenshoting(1)
+    await message.answer('Загружаю запись... \nНажми "Смотреть" через 5-10 секунд.',
+                         reply_markup=markup_reply)
     await bot.send_photo(message.chat.id, photo=open('screenshot.png', 'rb'))
     await Form.replay_watch.set()
 
@@ -198,8 +198,9 @@ async def replay_watch(message: types.Message, state: FSMContext):
         item_choose = types.KeyboardButton(text='Выбрать игрока')
         item_close = types.KeyboardButton(text='Закрыть')
         markup_reply.add(item_pause, item_choose, item_close)
-        await message.answer('Включаю запись...', reply_markup=markup_reply)
-        screenshoting(2)
+        await message.answer('Реплей включен. Напиши /stream для управления трансляцией',
+                             reply_markup=markup_reply)
+        screenshoting(3)
         await bot.send_photo(message.chat.id, photo=open('screenshot.png', 'rb'))
     elif message.text == 'Пауза':
         logging.info('Paused replay ' + str(message.from_user))
