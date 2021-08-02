@@ -54,9 +54,10 @@ def admin(func):
     return wrapper
 
 
-def screenshoting(delay):
+async def screenshoting(delay, message):
     time.sleep(delay)
     pyautogui.screenshot('screenshot.png')
+    await bot.send_photo(message.chat.id, photo=open('screenshot.png', 'rb'))
 
 
 # welcome
@@ -101,8 +102,7 @@ async def dota(message: types.Message):
     logging.info('Dota 2 opening ' + str(message.from_user))
     await message.answer('Dota 2 запущена.')
     os.popen(r'C:\Program Files (x86)\Steam\steamapps\common\dota 2 beta\game\bin\win64\dota2.exe')
-    screenshoting(2)
-    await bot.send_photo(message.chat.id, photo=open('screenshot.png', 'rb'))
+    await screenshoting(2, message)
 
 
 # screenshot
@@ -110,8 +110,7 @@ async def dota(message: types.Message):
 @auth
 async def screen(message: types.Message):
     logging.info('Screening ' + str(message.from_user))
-    screenshoting(0.2)
-    await bot.send_photo(message.chat.id, photo=open('screenshot.png', 'rb'))
+    await screenshoting(0.2, message)
 
 
 # Streaming
@@ -150,8 +149,7 @@ async def shutdown(message: types.Message):
     logging.info('Shutdown ' + str(message.from_user))
     await message.answer('Завершение работы.')
     # os.system('shutdown -s')
-    screenshoting(1)
-    await bot.send_photo(message.chat.id, photo=open('screenshot.png', 'rb'))
+    await screenshoting(1, message)
 
 
 # watch replay dota 2
