@@ -32,6 +32,7 @@ class Form(StatesGroup):
     replay_watch = State()
     replay_watching = State()
     replay_choose_player = State()
+    moveto = State()
 
 
 def auth(func):
@@ -275,6 +276,7 @@ async def replay_choose_player(callback: types.CallbackQuery):
     await choose_player(10, callback, 970, 15)
 
 
+# watch controller
 @dp.message_handler(state='*', commands='watch')
 @auth
 async def watch_replay(message: types.Message):
@@ -286,6 +288,48 @@ async def watch_replay(message: types.Message):
     await message.answer('Управление реплеем:', reply_markup=markup_inline)
     await Form.replay_watching.set()
 
+
+# left click
+@dp.message_handler(state='*', commands='lclick')
+@auth
+async def left_click(message: types.Message):
+    await message.answer('Нажал.')
+    pyautogui.click()
+
+
+# right click
+@dp.message_handler(state='*', commands='rclick')
+@auth
+async def right_click(message: types.Message):
+    await message.answer('Нажал.')
+    pyautogui.click(button='right')
+
+
+# double click
+@dp.message_handler(state='*', commands='dclick')
+@auth
+async def double_click(message: types.Message):
+    await message.answer('Нажал.')
+    pyautogui.doubleClick()
+
+# move to
+@dp.message_handler(state='*', commands='moveto')
+@auth
+async def moveto(message: types.Message):
+    await message.answer('Куда перенести курсор?')
+    await Form.moveto.set()
+    pyautogui.moveTo()
+
+
+@dp.message_handler(state=Form.moveto)
+async def moveto(message: types.Message, state: FSMContext):
+    try:
+        x, y = message.text.split()
+        pyautogui.moveTo(int(x), int(y))
+        await message.answer('Перенёс.')
+    except ValueError:
+        await message.answer('Некорректный ввод коордиант.')
+    await state.finish()
 
 # run long-polling
 if __name__ == '__main__':
